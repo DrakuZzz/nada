@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="auth-container">
+        <form class="auth-form" id="loginForm">
+            <div class="auth-logo">🔐</div>
+            <h2>Iniciar Sesión</h2>
+            
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Ingrese su email" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" placeholder="Ingrese su contraseña" required>
+            </div>
+            
+            <button type="submit">Ingresar</button>
+            
+            <p class="access-link">
+                ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
+            </p>
+
+            <div class="security-notice">
+                🔒 Tus datos están protegidos
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const credentials = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(credentials)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ Login exitoso');
+                    localStorage.setItem('auth_token', data.token);
+                    localStorage.setItem('user_id', data.user.id);
+                    localStorage.setItem('user_name', data.user.name);
+                    localStorage.setItem('user_email', data.user.email);
+                    window.location.href = '/dashboard';
+                } else {
+                    alert('❌ Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('⚠️ Error de conexión');
+            }
+        });
+    </script>
+</body>
+</html>
